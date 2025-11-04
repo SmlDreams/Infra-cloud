@@ -80,8 +80,68 @@ MacBook-Air-de-Remult:~ remult$ curl http://api-test-mgmt.azure-api.net/hello
 ### Partie 1 :
 
 on crée le static website et on link azure a github pour qu'il puissent Download les bon fichier de se repo 
+ou alors on suit le tp et fait un storage account
+crée une class container web
 
 ### partie 2 : 
 liaison via github
+ou si on suit le tp on televerse les deux fichier dans le container
 
 ### Partie 3 :
+
+on enable le site static via le storage account
+
+#### Partie 4 : Does It work?
+
+les deux request curl l'api et le site sont bien accesible
+```cmd
+MacBook-Air-de-Remult:tftp remult$ curl https://websitestorageinfracloud.z28.web.core.windows.net/
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Sasuke Dark API</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap">
+</head>
+<body>
+    <h1>Sasuke Dark API Call</h1>
+    <p>Appuie sur le bouton pour appeler l'API :</p>
+    <button id="callApi">Appeler l'API</button>
+    <div id="response"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+MacBook-Air-de-Remult:tftp remult$ curl http://api-test-mgmt.azure-api.net/hello
+{"message":"Bonjour depuis l'API Flask !"}
+```
+
+## Etape 4 :
+
+Cette partie est ecrite en bricolant avec la doc et des tuto car l'offre n'est pas dispo dans notre pack student
+
+
+### Partie 1 :
+
+on crée le azure front door ....
+on ajoute notre storage account comme origine via backend pool
+on laisse les option pour la publication par default 
+
+
+
+### Partie 2 :
+
+
+ensuite on creé le front end on laisse le domain fournit par azure
+
+on active https avec un certificats géré par azure.
+
+
+### Partie 3 :
+
+on crée un deuxieme backend pool pour l'api
+sur le front on crée une nouvelle route avec en endpoint le meme domain mais avec pattern de base /api
+donc /api/hello pour acceder a l'api
+
+
+on ajoute la nouvelle route aussi dans l'api mgmt
