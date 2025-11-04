@@ -31,7 +31,7 @@ docker tag flask-api infracloudynov.azurecr.io/samples/flask-api:latest
 docker push infracloudynov.azurecr.io/samples/flask-api:latest
 ```
 
-Partie 3 : Does it work ?
+### Partie 3 : Does it work ?
 
 
 ```cmd
@@ -41,4 +41,47 @@ MacBook-Air-de-Remult:~ remult$ curl http://20.216.220.240:5000/hello
 
 
 ## Etape 2 :
+
+### Partie 1 :
+
 [api DOC](./API/api-doc.yaml)
+
+### Partie 2 :
+
+on crée l'api mgmt puis on crée une nouvelle api et dans design on ajoute le yaml de la section précedente on peut mtn faire un test et ca marche
+
+```cmd
+HTTP response
+
+HTTP/1.1 200 OK
+content-length: 43
+content-type: application/json
+date: Tue, 04 Nov 2025 11:06:11 GMT
+vary: Origin
+    
+{
+    "message": "Bonjour depuis l'API Flask !"
+}
+```
+
+### Partie 3 :
+
+exposé l'api via le mgmt ne pas oublier de decoché required subscription ...
+
+```cmd
+MacBook-Air-de-Remult:~ remult$ curl http://api-test-mgmt.azure-api.net/hello
+{"message":"Bonjour depuis l'API Flask !"}
+```
+
+## Etape 3 :
+
+[le code source est dispo ici](./WEB/)
+
+### Partie 1 :
+
+on crée le static website et on link azure a github pour qu'il puissent Download les bon fichier de se repo 
+
+### partie 2 : 
+liaison via github
+
+### Partie 3 :
