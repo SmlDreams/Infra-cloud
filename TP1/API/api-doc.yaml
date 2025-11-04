@@ -1,0 +1,24 @@
+openapi: 3.0.3
+info:
+  title: Simple Flask API
+  version: 1.0.0
+  description: Une API minimale Flask pour dire hello
+servers:
+  - url: http://localhost:5000
+    description: Serveur local
+paths:
+  /hello:
+    get:
+      summary: Renvoie un message de bienvenue
+      description: Cette route renvoie un message JSON avec "Hello, World!"
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Hello, World!"
