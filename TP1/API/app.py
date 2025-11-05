@@ -10,5 +10,5 @@ def hello():
 
 # Point d'entrée principal
 if __name__ == '__main__':
-    # Lancer sur toutes les interfaces, port 5000 (par défaut)
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Lancer sur toutes les interfaces, port 8080 (par défaut)
+    app.run(host='0.0.0.0', port=8080, debug=True)

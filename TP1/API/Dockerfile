@@ -14,11 +14,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Étape 6 : Exposer le port de l'application
-EXPOSE 5000
+EXPOSE 8080
 
 # Étape 7 : Créer un utilisateur non-root (meilleure sécurité)
 RUN useradd -m flaskuser
 USER flaskuser
 
 # Étape 8 : Définir le point d’entrée (serveur de prod)
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
