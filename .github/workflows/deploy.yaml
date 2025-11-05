@@ -51,25 +51,26 @@ jobs:
             --region=europe-west9 \
             --platform=managed \
             --allow-unauthenticated
-deploy-web:
-  name: Upload static website to GCS
-  runs-on: ubuntu-latest
-  defaults:
-    run:
-      working-directory: TP1/WEB
-  needs: deploy-api
 
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+  deploy-web:
+    name: Upload static website to GCS
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: TP1/WEB
+    needs: deploy-api
 
-    - name: Authenticate to GCP
-      uses: google-github-actions/auth@v1
-      with:
-        credentials_json: ${{ secrets.GCP_SA_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Upload static site to GCS
-      run: |
-        echo "Syncing website to bucket..."
-        # Utilise gcloud storage rsync à la place de gsutil
-        gcloud storage rsync ./ gs://mon-site-web-bucket --delete
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Upload static site to GCS
+        run: |
+          echo "Syncing website to bucket..."
+          # Utilise gcloud storage rsync à la place de gsutil
+          gcloud storage rsync ./ gs://mon-site-web-bucket --delete
