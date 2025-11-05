@@ -17,7 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 1️⃣ Authentifie gcloud avec ton compte de service
+      # Auth GCP
       - name: Set up gcloud CLI
         uses: google-github-actions/setup-gcloud@v2
         with:
@@ -25,16 +25,14 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
-      # 2️⃣ Configure Docker pour Artifact Registry
+      # Auth Docker → Artifact Registry
       - name: Authenticate Docker with Artifact Registry
         run: |
-          # Active explicitement le compte de service
-          gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
           gcloud auth configure-docker europe-west9-docker.pkg.dev --quiet
           gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://europe-west9-docker.pkg.dev
 
-      # 3️⃣ Build et push de l’image Flask
+      # Build & Push Image
       - name: Build and push Docker image
         run: |
           IMAGE_NAME=europe-west9-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/flask-api-repo/flask-api
@@ -42,7 +40,7 @@ jobs:
           docker build -t $IMAGE_NAME:latest .
           docker push $IMAGE_NAME:latest
 
-      # 4️⃣ (Optionnel mais très utile) Déploiement automatique sur Cloud Run
+      # Déploiement Cloud Run (optionnel)
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy flask-api \
