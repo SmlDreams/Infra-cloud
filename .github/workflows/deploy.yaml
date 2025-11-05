@@ -28,6 +28,9 @@ jobs:
       # 2️⃣ Configure Docker pour Artifact Registry
       - name: Authenticate Docker with Artifact Registry
         run: |
+          # Active explicitement le compte de service
+          gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
           gcloud auth configure-docker europe-west9-docker.pkg.dev --quiet
           gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://europe-west9-docker.pkg.dev
 
