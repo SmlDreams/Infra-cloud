@@ -73,6 +73,7 @@ jobs:
         run: |
           echo "Syncing website to bucket..."
           # Utilise gcloud storage rsync à la place de gsutil
-          gcloud storage rsync ./ gs://mon-site-web-bucket --delete-extra --recursive
+          gcloud storage cp ./ gs://mon-site-web-bucket/ --recursive
+
 
 
