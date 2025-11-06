@@ -47,7 +47,7 @@ version: 1
 on se place dans le projet du tp et on crée un utilisateurs de service pour le moment sans permissions
 ```cmd
 lorensviguie@cloudshell:~$ gcloud config set project  
-circular-truth-477213-d2   tp3-infracloud-m1          
+tp3-infracloud-m1)   tp3-infracloud-m1          
 lorensviguie@cloudshell:~$ gcloud config set project tp3-infracloud-m1 
 Updated property [core/project].
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam service-accounts create app-backend   --display-name="Application Backend"
@@ -601,20 +601,26 @@ l'auth ce fait vai les Application Default Credentials
 ```cmd
 gcloud iam service-accounts create github-deployer \
   --display-name="GitHub CI/CD Service Account"
-orensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding circular-truth-477213-d2 \
-  --member="serviceAccount:github-deployer@circular-truth-477213-d2.iam.gserviceaccount.com" \
+
+gcloud iam service-accounts keys create github-sa-key.json \
+  --iam-account=github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com
+
+
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding tp3-infracloud-m1 \
+  --member="serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com" \
   --role="roles/artifactregistry.admin"
-Updated IAM policy for project [circular-truth-477213-d2].
+Updated IAM policy for project [tp3-infracloud-m1].
 bindings:
 - members:
-  - serviceAccount:github-deployer@circular-truth-477213-d2.iam.gserviceaccount.com
+  - serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com
   role: roles/storage.admin
 etag: BwZC7BM1QBE=
 version: 1
-lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding circular-truth-477213-d2 \
-  --member="serviceAccount:github-deployer@circular-truth-477213-d2.iam.gserviceaccount.com" \
+
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding tp3-infracloud-m1 \
+  --member="serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com" \
   --role="roles/run.admin"
-Updated IAM policy for project [circular-truth-477213-d2].
+Updated IAM policy for project [tp3-infracloud-m1)].
 bindings:
 - members:
   - serviceAccount:976861044501-compute@developer.gserviceaccount.com
