@@ -2,7 +2,7 @@ name: Deploy Flask API & Static Web to GCP
 
 on:
   push:
-    branches: [ tp2 ]
+    branches: [ tp3 ]
   workflow_dispatch:
 
 jobs:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: TP1/API
+        working-directory: TP3/API
 
     steps:
       - name: Checkout repository
@@ -52,28 +52,28 @@ jobs:
             --platform=managed \
             --allow-unauthenticated
 
-  deploy-web:
-    name: Upload static website to GCS
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: TP1/WEB
-    needs: deploy-api
+#  deploy-web:
+#    name: Upload static website to GCS
+#    runs-on: ubuntu-latest
+#    defaults:
+#      run:
+#        working-directory: TP1/WEB
+#    needs: deploy-api
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
 
-      - name: Authenticate to GCP
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+#      - name: Authenticate to GCP
+#        uses: google-github-actions/auth@v1
+#        with:
+#          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Upload static site to GCS
-        run: |
-          echo "Syncing website to bucket..."
-          # Utilise gcloud storage rsync à la place de gsutil
-          gcloud storage cp ./ gs://mon-site-web-bucket/ --recursive
+#      - name: Upload static site to GCS
+#        run: |
+#          echo "Syncing website to bucket..."
+#          # Utilise gcloud storage rsync à la place de gsutil
+#          gcloud storage cp ./ gs://mon-site-web-bucket/ --recursive
 
 
 

@@ -593,7 +593,33 @@ lorensviguie@cloudshell:~ (tp3-infracloud-m1)$
 il faut donne le droit que sur le bucket sinon il pourra faire les action du rôle sur tous les bucket
 
 ☀️ 2. Préparer lʼapplication à déployer
+
+pour communiquer avec gcloud -> pip install google-cloud-storage
+la var d'ENV -> BUCKET_NAME=tp3-bucket-p1
+l'auth ce fait vai les Application Default Credentials
+[le code](./API/app.py)
 ```cmd
+gcloud iam service-accounts create github-deployer \
+  --display-name="GitHub CI/CD Service Account"
+orensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding circular-truth-477213-d2 \
+  --member="serviceAccount:github-deployer@circular-truth-477213-d2.iam.gserviceaccount.com" \
+  --role="roles/artifactregistry.admin"
+Updated IAM policy for project [circular-truth-477213-d2].
+bindings:
+- members:
+  - serviceAccount:github-deployer@circular-truth-477213-d2.iam.gserviceaccount.com
+  role: roles/storage.admin
+etag: BwZC7BM1QBE=
+version: 1
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding circular-truth-477213-d2 \
+  --member="serviceAccount:github-deployer@circular-truth-477213-d2.iam.gserviceaccount.com" \
+  --role="roles/run.admin"
+Updated IAM policy for project [circular-truth-477213-d2].
+bindings:
+- members:
+  - serviceAccount:976861044501-compute@developer.gserviceaccount.com
+  - serviceAccount:976861044501@cloudservices.gserviceaccount.com
+  role: roles/editor
 
 ```
 ☀️
