@@ -1,0 +1,11 @@
+title: "CloudRunManager"
+description: "Rôle personnalisé pour gérer les services Cloud Run"
+stage: "GA"
+includedPermissions:
+  - run.services.create
+  - run.services.list
+  - run.services.delete
+  - run.services.get
+
+
+ 
