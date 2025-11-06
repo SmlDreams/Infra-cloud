@@ -15,3 +15,9 @@ gcloud projects create PROJECT_ID --name="Nom du projet"
 ```cmd
 gcloud projects delete PROJECT_ID
 ```
+
+### switch de project
+
+```cmd
+gcloud config set project tp3-infracloud-m1
+```

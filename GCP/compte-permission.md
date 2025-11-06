@@ -39,13 +39,13 @@ gcloud projects remove-iam-policy-binding tp3-infracloud-m1 \
 ## Permissions
 ```cmd
 
-gcloud projects add-iam-policy-binding circular-truth-477213-d2 \
-  --member="serviceAccount:github-deployer@circular-truth-477213-d2.iam.gserviceaccount.com" \
-  --role="roles/storage.admin"
+gcloud projects add-iam-policy-binding tp3-infracloud-m1 \
+  --member="serviceAccount:app-backend@tp3-infracloud-m1.iam.gserviceaccount.com" \
+  --role="roles/artifactregistry.admin"
 
 gcloud projects add-iam-policy-binding circular-truth-477213-d2 \
   --member="serviceAccount:github-deployer@circular-truth-477213-d2.iam.gserviceaccount.com" \
-  --role="roles/artifactregistry.admin"
+  --role="roles/storage.admin"
 
 
 # Rôle permettant de créer et uploader des images dans Artifact Registry
