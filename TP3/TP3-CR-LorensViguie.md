@@ -600,10 +600,28 @@ l'auth ce fait vai les Application Default Credentials
 [le code](./API/app.py)
 
 
-☀️
-```cmd
+☀️ 3. Conteneuriser lʼapplication
 
+Rédigez un Dockerfile minimal pour exécuter votre application.  
+[le Dockerfile](./API/Dockerfile).  
+
+Quelle instruction détermine le port utilisé par Cloud Run ?  
+variable environnement -> PORT.  
+
+Comment pouvez-vous tester localement votre conteneur avant déploiement ?  
+```cmd
+docker build -t flask-api:local .
+docker run -p 8080:8080 -e BUCKET_NAME=tp3-bucket-p1 flask-api:local
 ```
+
+Quelle commande permet de construire lʼimage et de la publier dans
+le registre de conteneurs de votre projet ?
+```txt
+YOLO on fait la CI nous
+```
+[la CI en question](/.github/workflows/deploy.yaml)
+
+
 ☀️
 ```cmd
 
@@ -651,6 +669,11 @@ bindings:
   role: roles/iam.serviceAccountUser
 etag: BwZC7GOf5nM=
 version: 1
+
+gcloud iam service-accounts add-iam-policy-binding \
+  app-backend@tp3-infracloud-m1.iam.gserviceaccount.com \
+  --member="serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
 
 ```
 
