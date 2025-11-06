@@ -219,34 +219,212 @@ etag: CAI=
 kind: storage#policy
 resourceId: projects/_/buckets/tp3-bucket-p1
 version: 1
+
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud storage buckets get-iam-policy gs://tp3-bucket-p1 \
   --format="table(bindings.role, bindings.members)"
 ROLE: ['roles/storage.legacyBucketOwner', 'roles/storage.legacyBucketReader', 'roles/storage.legacyObjectOwner', 'roles/storage.legacyObjectReader', 'roles/storage.objectViewer']
 MEMBERS: [['projectEditor:tp3-infracloud-m1', 'projectOwner:tp3-infracloud-m1'], ['projectViewer:tp3-infracloud-m1'], ['projectEditor:tp3-infracloud-m1', 'projectOwner:tp3-infracloud-m1'], ['projectViewer:tp3-infracloud-m1'], ['user:Lorensviguie06@gmail.com']]
 ```
-☀️
+☀️ 5. Tester lʼaccès restreint
 ```cmd
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud auth login lorensviguie06@gmail.com
+
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud storage buckets list
+---
+creation_time: 2025-11-06T09:22:20+0000
+default_storage_class: STANDARD
+generation: 1762420939780048050
+location: EU
+location_type: multi-region
+metageneration: 2
+name: tp3-bucket-p1
+public_access_prevention: inherited
+rpo: DEFAULT
+soft_delete_policy:
+  effectiveTime: '2025-11-06T09:22:20.450000+00:00'
+  retentionDurationSeconds: '604800'
+storage_url: gs://tp3-bucket-p1/
+uniform_bucket_level_access: true
+update_time: 2025-11-06T09:45:57+0000
+# pour le reste j'ai pas d'object dans le bucket
+# mais via la WebUi je ne peux pas push des fichier sur le bukcet mais je le vois bien
+# lecture et download marche mais pas push
+```
+☀️ 6. Étendre le rôle au niveau projet
+
+un peu bête car deja le role view au niveau du projet mais ca marche et permet de donné a un user le droit de vu sur tous les storage bucket du projet
+```cmd
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding tp3-infracloud-m1 \
+  --member="user:lorensviguie06@gmail.com" \
+  --role="roles/storage.objectViewer"
+Updated IAM policy for project [tp3-infracloud-m1].
+bindings:
+- members:
+  - serviceAccount:app-backend@tp3-infracloud-m1.iam.gserviceaccount.com
+  role: roles/artifactregistry.admin
+- members:
+  - user:lorensvpro@gmail.com
+  role: roles/editor
+- members:
+  - user:lorensviguie@gmail.com
+  role: roles/owner
+- members:
+  - user:Lorensviguie06@gmail.com
+  role: roles/storage.objectViewer
+- members:
+  - user:Lorensviguie06@gmail.com
+  role: roles/viewer
+etag: BwZC6iyWcUA=
+version: 1
+```
+tjrs que un bucket mais mtn le user si il n'a pas la permission global il pourrai mtn voir tous les bucket du projet et download les bucket et pas faire de modification 
+
+☀️ 7. Comparer les deux portées
+Quelles différences observez-vous entre :
+    un rôle appliqué sur une ressource spécifique ?
+    un rôle appliqué sur un projet entier ?
+
+```txt
+un role applique au projet permet d'avoir une visualisation sur l'ensemble du projet exemple quand une nouvelle ressource est crée pas besoin d'allez verifier les permissions utile pour les perssone qui ont besoin d'acces globaux au projet
+la ou un rôle sur une ressource precise permet de mieux filtré les acces on limite les acces par groupe ou user permet donc un meilleur filtrage et surtout une meilleur tracabilité 
+```
+
+Expliquez en une phrase ce que cela illustre du principe du moindre
+privilège ?
+
+```txt
+un utilisateur ne dispose des acces en lecture ou ecriture seulement sur les ressources dont il a besoin .
 
 ```
-☀️
-```cmd
 
+
+☀️ 8. Nettoyer la configuration
+```cmd
+# on retire la permission au niveau du projet
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects remove-iam-policy-binding tp3-infracloud-m1 \
+  --member="user:Lorensviguie06@gmail.com" \
+  --role="roles/storage.objectViewer"
+Updated IAM policy for project [tp3-infracloud-m1].
+bindings:
+- members:
+  - serviceAccount:app-backend@tp3-infracloud-m1.iam.gserviceaccount.com
+  role: roles/artifactregistry.admin
+- members:
+  - user:lorensvpro@gmail.com
+  role: roles/editor
+- members:
+  - user:lorensviguie@gmail.com
+  role: roles/owner
+- members:
+  - user:Lorensviguie06@gmail.com
+  role: roles/viewer
+etag: BwZC6lstEOI=
+
+# on retire la permission au niveau du bucket
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud storage buckets remove-iam-policy-binding gs://tp3-bucket-p1   --member="user:Lorensviguie06@gmail.com"   --role="roles/storag
+e.objectViewer"
+bindings:
+- members:
+  - projectEditor:tp3-infracloud-m1
+  - projectOwner:tp3-infracloud-m1
+  role: roles/storage.legacyBucketOwner
+- members:
+  - projectViewer:tp3-infracloud-m1
+  role: roles/storage.legacyBucketReader
+- members:
+  - projectEditor:tp3-infracloud-m1
+  - projectOwner:tp3-infracloud-m1
+  role: roles/storage.legacyObjectOwner
+- members:
+  - projectViewer:tp3-infracloud-m1
+  role: roles/storage.legacyObjectReader
+etag: CAM=
+kind: storage#policy
+resourceId: projects/_/buckets/tp3-bucket-p1
+version: 1
 ```
-☀️
-```cmd
+bon la il a encore acces car permission au niveau du projet
 
+## Exercice 4  Créer un rôle personnalisé pour Cloud Run
+
+
+☀️ 1. Identifier les permissions nécessaires
+déployer un service Cloud Run ?
+```txt
+run.services.create et run.services.update
+
+Permet de créer un nouveau service ou mettre à jour un service existant avec une nouvelle image ou configuration.
 ```
-☀️
-```cmd
+lister les services existants ?
+```txt
+un.services.list
 
+Permet de lister tous les services Cloud Run dans un projet ou namespace spécifique.
 ```
-☀️
-```cmd
+supprimer un service ?
+```txt
+run.services.delete
 
+Permet de supprimer un service Cloud Run.
 ```
-☀️
-```cmd
+il existe des rôle prédefinie pour repondre a ces besoin
+```txt
+roles/run.admin	Toutes les permissions Cloud Run (create, update, delete, list, get, etc.)
+roles/run.developer	create, update, get, list (pas delete)
+roles/run.viewer get, list seulement (lecture seule)
+```
 
+☀️ 2. Créer le fichier de définition
+
+```cmd
+# normalement il y a tous les champs obligatoires la
+title: "Cloud Run Service Manager"
+description: "Rôle personnalisé permettant de créer, lire et supprimer des services Cloud Run"
+stage: GA
+includedPermissions:
+  - run.services.create
+  - run.services.get
+  - run.services.list
+  - run.services.delete
+```
+
+☀️ 3. Créer le rôle dans votre projet
+```cmd
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam roles create cloudRunServiceManager \
+  --project=tp3-infracloud-m1 \
+  --file=test.yaml
+
+WARNING: API is not enabled for permissions: [run.services.create, run.services.get, run.services.list, run.services.delete]. Please enable the corresponding APIs to use those permissions.
+
+Created role [cloudRunServiceManager].
+description: Rôle personnalisé permettant de créer, lire et supprimer des services
+  Cloud Run
+etag: BwZC6pXqsdQ=
+includedPermissions:
+- run.services.create
+- run.services.delete
+- run.services.get
+- run.services.list
+name: projects/tp3-infracloud-m1/roles/cloudRunServiceManager
+stage: GA
+title: Cloud Run Service Manager
+
+# bon bah on active l'api du coup
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud services enable run.googleapis.com
+Operation "operations/acf.p2-221439700799-2769e6ac-3833-4c81-8aaf-7a4d13e70ccc" finished successfully.
+
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam roles describe cloudRunServiceManager --project=tp3-infracloud-m1
+description: Rôle personnalisé permettant de créer, lire et supprimer des services
+  Cloud Run
+etag: BwZC6pXqsdQ=
+includedPermissions:
+- run.services.create
+- run.services.delete
+- run.services.get
+- run.services.list
+name: projects/tp3-infracloud-m1/roles/cloudRunServiceManager
+stage: GA
+title: Cloud Run Service Manager
 ```
 ☀️
 ```cmd

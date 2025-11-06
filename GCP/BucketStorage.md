@@ -22,7 +22,7 @@ gcloud storage buckets describe gs://ynov-tp3-demo
 
 ### 🗑️ 4. Supprimer un bucket
 
-``cmd
+```cmd
 gcloud storage buckets delete gs://ynov-tp3-demo
 gcloud storage buckets delete gs://ynov-tp3-demo --quiet
 ```
