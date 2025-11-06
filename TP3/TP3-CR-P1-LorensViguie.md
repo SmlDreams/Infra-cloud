@@ -1,4 +1,4 @@
-# Compte rendu du TP3
+# Compte rendu du TP3 P1
 
 ## Exercice 1 . Créer les identités de base
 
@@ -698,24 +698,43 @@ l'api n'a acces que a un bucket donc meme si l'api est corompu et que l'on chang
 
 
 ☀️ 6. Observer les logs
-```cmd
 
+Recherchez les entrées correspondant à votre service Cloud Run et aux requêtes Cloud Storage.
+Quelle identité (principalEmail) apparaît dans les logs ?
+voir en dessous
+
+
+Comment pouvez-vous confirmer que cʼest bien le compte de service run-backend qui a effectué la lecture du bucket ?
+```cmd
+"authenticationInfo": {
+  "principalEmail": "app-backend@tp3-infracloud-m1.iam.gserviceaccount.com"
+}
 ```
 ☀️ 7. Nettoyer la configuration
 
 Supprimez le service Cloud Run si vous nʼen avez plus besoin.
 ```cmd
-
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud run services delete flask-api \
+  --region=europe-west9 \
+  --platform=managed \
+  --quiet
+Deleting [flask-api]...done.                                                                                                                                                       
+Deleted service [flask-api].
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud artifacts repositories delete flask-api-repo \
+  --location=europe-west9 \
+  --quiet
+Delete request issued for: [flask-api-repo]
+Waiting for operation [projects/tp3-infracloud-m1/locations/europe-west9/operations/a300f4ac-8daa-41be-b6cc-5187fa43af87] to complete...done.                                      
+Deleted repository [flask-api-repo].
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud storage rm --recursive gs://tp3-bucket-p1
+Removing objects:
+Removing gs://tp3-bucket-p1/index.html#1762427571378581...                                                                                                                         
+  Completed 1/1                                                                                                                                                                    
+Removing buckets:
+Removing gs://tp3-bucket-p1/...                                                                                                                                                    
+  Completed 1/1
 ```
 
 Pourquoi est-il risqué de laisser un compte de service inactif ou surdimensionné en permissions dans un projet Cloud ?
 dans un premier pour un question d'argent et aussi une question de sécu laissé un service non utilisé actif peut etre un moyen d'acces a nos autres services ou juste il peut y avoir des residu compromettant sur le servcie oublié
 
-☀️
-```cmd
-
-```
-☀️
-```cmd
-
-```
