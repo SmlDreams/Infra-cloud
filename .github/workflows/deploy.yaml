@@ -29,7 +29,7 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           version: "latest"
-          
+
       # 3️⃣ Créer le repository Artifact Registry si nécessaire
       - name: Create Artifact Registry repository
         run: |
@@ -61,6 +61,8 @@ jobs:
             --region=europe-west9 \
             --platform=managed \
             --allow-unauthenticated
+            --service-account=app-backend@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com
+            --set-env-vars BUCKET_NAME=tp3-bucket-p1
 
 #  deploy-web:
 #    name: Upload static website to GCS

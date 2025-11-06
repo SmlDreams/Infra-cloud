@@ -627,6 +627,15 @@ bindings:
   - serviceAccount:976861044501@cloudservices.gserviceaccount.com
   role: roles/editor
 
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam service-accounts add-iam-policy-binding 221439700799-compute@developer.gserviceaccount.com   --member="serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com"   --role="roles/iam.serviceAccountUser"
+Updated IAM policy for serviceAccount [221439700799-compute@developer.gserviceaccount.com].
+bindings:
+- members:
+  - serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountUser
+etag: BwZC7GOf5nM=
+version: 1
+
 ```
 ☀️
 ```cmd
