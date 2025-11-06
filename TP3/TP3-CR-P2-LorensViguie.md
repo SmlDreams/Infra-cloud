@@ -414,8 +414,3 @@ gcloud logging metrics delete SET_IAM_POLICY_METRIC_NAME
 ```
 
 [Enregistrez un exemple de log dʼaudit (au format JSON)](./log-IAM.json)
-
-
-```bash
-
-```
