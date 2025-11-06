@@ -2,7 +2,7 @@ name: Deploy Flask API & Static Web to GCP
 
 on:
   push:
-    branches: [ main ]
+    branches: [ tp2 ]
   workflow_dispatch:
 
 jobs:
