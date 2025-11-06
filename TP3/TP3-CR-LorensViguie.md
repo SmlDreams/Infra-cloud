@@ -622,15 +622,18 @@ YOLO on fait la CI nous
 [la CI en question](/.github/workflows/deploy.yaml)
 
 
-☀️
+☀️ 4. Déployer sur Cloud Run
+
+Quelle option CLI permet de spécifier le compte de service associé au déploiement ?
+--service-account=<SERVICE_ACCOUNT_EMAIL>.  
+
+Où pouvez-vous vérifier dans la console que Cloud Run utilise bien ce compte de service ?
 ```cmd
-
+gcloud run services describe flask-api \
+  --region=europe-west9 \
+  --platform=managed \
+  --format="value(spec.template.spec.serviceAccountName)"
 ```
-
-
-
-
-
 
 ```cmd
 gcloud iam service-accounts create github-deployer \
@@ -674,21 +677,40 @@ gcloud iam service-accounts add-iam-policy-binding \
   app-backend@tp3-infracloud-m1.iam.gserviceaccount.com \
   --member="serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com" \
   --role="roles/iam.serviceAccountUser"
-
 ```
 
-☀️
+☀️ 5. Tester le service
+
+Accédez à lʼURL du service Cloud Run.  
+```cmd
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ curl https://flask-api-221439700799.europe-west9.run.app/list
+["index.html"]
+```
+ 
+Le contenu du bucket sʼaffiche-t-il ?   
+oui ^^
+
+Que se passe-t-il si le service tente dʼaccéder à un autre bucket. pour lequel il nʼa pas de rôle IAM ?    
+(deja faut modifier la variable d'env chiant) et ca marche pas car le user app-backend a pas les droits sur les autres bukcet
+
+Comment ce comportement illustre-t-il le principe du moindre privilège ?  
+l'api n'a acces que a un bucket donc meme si l'api est corompu et que l'on change la var d'env aucun fuite n'est possible 
+
+
+☀️ 6. Observer les logs
 ```cmd
 
 ```
-☀️
+☀️ 7. Nettoyer la configuration
+
+Supprimez le service Cloud Run si vous nʼen avez plus besoin.
 ```cmd
 
 ```
-☀️
-```cmd
 
-```
+Pourquoi est-il risqué de laisser un compte de service inactif ou surdimensionné en permissions dans un projet Cloud ?
+dans un premier pour un question d'argent et aussi une question de sécu laissé un service non utilisé actif peut etre un moyen d'acces a nos autres services ou juste il peut y avoir des residu compromettant sur le servcie oublié
+
 ☀️
 ```cmd
 
