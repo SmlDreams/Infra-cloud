@@ -1,0 +1,184 @@
+{
+  "protoPayload": {
+    "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+    "status": {},
+    "authenticationInfo": {
+      "principalEmail": "lorensviguie@gmail.com",
+      "principalSubject": "user:lorensviguie@gmail.com",
+      "oauthInfo": {
+        "oauthClientId": "618104708054-9r9s1c4alg36erliucho9t52n32n6dgq.apps.googleusercontent.com"
+      }
+    },
+    "requestMetadata": {
+      "callerIp": "34.79.48.209",
+      "callerSuppliedUserAgent": "google-cloud-sdk gcloud/544.0.0 command/gcloud.projects.add-iam-policy-binding invocation-id/e62f4bae48ae4176aca29dba5e8040ce environment/devshell environment-version/None client-os/LINUX client-os-ver/6.6.111 client-pltf-arch/x86_64 interactive/True from-script/False python/3.12.10 term/tmux-256color  (Linux 6.6.111+),gzip(gfe)",
+      "requestAttributes": {},
+      "destinationAttributes": {}
+    },
+    "serviceName": "cloudresourcemanager.googleapis.com",
+    "methodName": "SetIamPolicy",
+    "authorizationInfo": [
+      {
+        "resource": "projects/tp3-infracloud-m1",
+        "permission": "resourcemanager.projects.setIamPolicy",
+        "granted": true,
+        "resourceAttributes": {
+          "service": "cloudresourcemanager.googleapis.com",
+          "name": "projects/tp3-infracloud-m1",
+          "type": "cloudresourcemanager.googleapis.com/Project"
+        },
+        "permissionType": "ADMIN_WRITE"
+      },
+      {
+        "resource": "projects/tp3-infracloud-m1",
+        "permission": "resourcemanager.projects.setIamPolicy",
+        "granted": true,
+        "resourceAttributes": {
+          "service": "cloudresourcemanager.googleapis.com",
+          "name": "projects/tp3-infracloud-m1",
+          "type": "cloudresourcemanager.googleapis.com/Project"
+        },
+        "permissionType": "ADMIN_WRITE"
+      }
+    ],
+    "resourceName": "projects/tp3-infracloud-m1",
+    "serviceData": {
+      "@type": "type.googleapis.com/google.iam.v1.logging.AuditData",
+      "policyDelta": {
+        "bindingDeltas": [
+          {
+            "action": "ADD",
+            "role": "roles/artifactregistry.admin",
+            "member": "serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com"
+          }
+        ]
+      }
+    },
+    "request": {
+      "@type": "type.googleapis.com/google.iam.v1.SetIamPolicyRequest",
+      "policy": {
+        "bindings": [
+          {
+            "role": "projects/tp3-infracloud-m1/roles/cloudRunServiceManager",
+            "members": [
+              "user:Lorensviguie06@gmail.com"
+            ]
+          },
+          {
+            "members": [
+              "serviceAccount:app-backend@tp3-infracloud-m1.iam.gserviceaccount.com",
+              "serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com"
+            ],
+            "role": "roles/artifactregistry.admin"
+          },
+          {
+            "members": [
+              "serviceAccount:service-221439700799@containerregistry.iam.gserviceaccount.com"
+            ],
+            "role": "roles/containerregistry.ServiceAgent"
+          },
+          {
+            "role": "roles/editor",
+            "members": [
+              "serviceAccount:221439700799-compute@developer.gserviceaccount.com",
+              "user:lorensvpro@gmail.com"
+            ]
+          },
+          {
+            "members": [
+              "user:lorensviguie@gmail.com"
+            ],
+            "role": "roles/owner"
+          },
+          {
+            "role": "roles/pubsub.serviceAgent",
+            "members": [
+              "serviceAccount:service-221439700799@gcp-sa-pubsub.iam.gserviceaccount.com"
+            ]
+          },
+          {
+            "members": [
+              "serviceAccount:service-221439700799@serverless-robot-prod.iam.gserviceaccount.com"
+            ],
+            "role": "roles/run.serviceAgent"
+          },
+          {
+            "members": [
+              "user:Lorensviguie06@gmail.com"
+            ],
+            "role": "roles/viewer"
+          }
+        ],
+        "etag": "BwZC6sYJhnA="
+      },
+      "resource": "tp3-infracloud-m1"
+    },
+    "response": {
+      "@type": "type.googleapis.com/google.iam.v1.Policy",
+      "bindings": [
+        {
+          "members": [
+            "user:Lorensviguie06@gmail.com"
+          ],
+          "role": "projects/tp3-infracloud-m1/roles/cloudRunServiceManager"
+        },
+        {
+          "members": [
+            "serviceAccount:app-backend@tp3-infracloud-m1.iam.gserviceaccount.com",
+            "serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com"
+          ],
+          "role": "roles/artifactregistry.admin"
+        },
+        {
+          "role": "roles/containerregistry.ServiceAgent",
+          "members": [
+            "serviceAccount:service-221439700799@containerregistry.iam.gserviceaccount.com"
+          ]
+        },
+        {
+          "members": [
+            "serviceAccount:221439700799-compute@developer.gserviceaccount.com",
+            "user:lorensvpro@gmail.com"
+          ],
+          "role": "roles/editor"
+        },
+        {
+          "members": [
+            "user:lorensviguie@gmail.com"
+          ],
+          "role": "roles/owner"
+        },
+        {
+          "members": [
+            "serviceAccount:service-221439700799@gcp-sa-pubsub.iam.gserviceaccount.com"
+          ],
+          "role": "roles/pubsub.serviceAgent"
+        },
+        {
+          "members": [
+            "serviceAccount:service-221439700799@serverless-robot-prod.iam.gserviceaccount.com"
+          ],
+          "role": "roles/run.serviceAgent"
+        },
+        {
+          "members": [
+            "user:Lorensviguie06@gmail.com"
+          ],
+          "role": "roles/viewer"
+        }
+      ],
+      "etag": "BwZC7E7bWuM="
+    }
+  },
+  "insertId": "-44ojk5e1busi",
+  "resource": {
+    "type": "project",
+    "labels": {
+      "project_id": "tp3-infracloud-m1"
+    }
+  },
+  "timestamp": "2025-11-06T12:36:02.239290Z",
+  "severity": "NOTICE",
+  "logName": "projects/tp3-infracloud-m1/logs/cloudaudit.googleapis.com%2Factivity",
+  "receiveTimestamp": "2025-11-06T12:36:03.031588683Z"
+}

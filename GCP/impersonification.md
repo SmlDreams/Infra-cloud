@@ -14,3 +14,9 @@ gcloud iam service-accounts add-iam-policy-binding \
 ```cmd
 gcloud auth print-access-token   --impersonate-service-account=deploy-automation@tp3-infracloud-m1.iam.gserviceaccount.com
 ```
+
+## delete le droit
+
+```cmd
+gcloud iam service-accounts remove-iam-policy-binding   deploy-automation@tp3-infracloud-m1.iam.gserviceaccount.com   --member="user:Lorensviguie06@gmail.com"   --role="roles/iam.serviceAccountTokenCreator"
+```
