@@ -426,27 +426,173 @@ name: projects/tp3-infracloud-m1/roles/cloudRunServiceManager
 stage: GA
 title: Cloud Run Service Manager
 ```
-☀️
+☀️ 4. Attribuer le rôle à un utilisateur
 ```cmd
-
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding tp3-infracloud-m1 \
+  --member="user:lorensviguie06@gmail.com" \
+  --role="projects/tp3-infracloud-m1/roles/cloudRunServiceManager"
+Updated IAM policy for project [tp3-infracloud-m1].
+bindings:
+- members:
+  - user:Lorensviguie06@gmail.com
+  role: projects/tp3-infracloud-m1/roles/cloudRunServiceManager
+- members:
+  - serviceAccount:app-backend@tp3-infracloud-m1.iam.gserviceaccount.com
+  role: roles/artifactregistry.admin
+- members:
+  - serviceAccount:service-221439700799@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:221439700799-compute@developer.gserviceaccount.com
+  - user:lorensvpro@gmail.com
+  role: roles/editor
+- members:
+  - user:lorensviguie@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:service-221439700799@gcp-sa-pubsub.iam.gserviceaccount.com
+  role: roles/pubsub.serviceAgent
+- members:
+  - serviceAccount:service-221439700799@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+- members:
+  - user:Lorensviguie06@gmail.com
+  role: roles/viewer
+etag: BwZC6qxC3-I=
+version: 1
 ```
-☀️
+je suis le compte owner donc j'ai tous les droit sur le projet
+
+☀️ 5. Tester le rôle
 ```cmd
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud config set run/region europe-west9
+Updated property [run/region].
 
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud run deploy nginx-test \
+  --image=nginx:latest \
+  --platform=managed \
+  --region=europe-west1 \
+  --no-allow-unauthenticated \
+  --port 80
+Deploying container to Cloud Run service [nginx-test] in project [tp3-infracloud-m1] region [europe-west1]
+Deploying new service...                                                                                                                                                           
+  Creating Revision...done                                                                                                                                                         
+  Routing traffic...done                                                                                                                                                           
+Done.   
+
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ curl https://nginx-test-221439700799.europe-west1.run.app/
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+[...]
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ 
+Service [nginx-test] revision [nginx-test-00001-jl5] has been deployed and is serving 100 percent of traffic.
+Service URL: https://nginx-test-221439700799.europe-west1.run.app
+
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud run services list --region=europe-west1
+✔
+SERVICE: nginx-test
+REGION: europe-west1
+URL: https://nginx-test-221439700799.europe-west1.run.app
+LAST DEPLOYED BY: lorensviguie@gmail.com
+LAST DEPLOYED AT: 2025-11-06T11:03:33.397322Z
+
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud run services delete nginx-test --region=europe-west1
+Service [nginx-test] will be deleted.
+
+Do you want to continue (Y/n)?  Y
+
+Deleting [nginx-test]...done.                                                                                                                                                      
+Deleted service [nginx-test].
 ```
-☀️
+tous est passé donc j'ai bien les permission necesaire pour lister crée et delete un container sur cloud run 
+
+☀️ 6. Analyser et corriger
 ```cmd
-
+#il manque des perm AAAAAAAAAAAAAA
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud auth login lorensviguie@gmail.com
+[...]
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam roles update cloudRunServiceManager   --project=tp3-infracloud-m1   --file=test.
+[...]
+description: Rôle personnalisé permettant de créer, lire et supprimer des services
+  Cloud Run
+etag: BwZC6uUx8yM=
+includedPermissions:
+- iam.serviceAccounts.actAs
+- run.services.create
+- run.services.delete
+- run.services.get
+- run.services.list
 ```
-☀️
+
+☀️ 7. Nettoyer la configuration
 ```cmd
-
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam roles delete cloudRunServiceManager --project=tp3-infracloud-m1
+deleted: true
+description: Rôle personnalisé permettant de créer, lire et supprimer des services
+  Cloud Run
+etag: BwZC6xRPQzc=
+includedPermissions:
+- iam.serviceAccounts.actAs
+- run.services.create
+- run.services.delete
+- run.services.get
+- run.services.list
+name: projects/tp3-infracloud-m1/roles/cloudRunServiceManager
+stage: GA
+title: Cloud Run Service Manager
 ```
-☀️
+Dans quel cas est-il préférable de le retirer plutôt que de le
+conserver ?
+```txt
+si un role de google cloud fait deja ca
+si il n'est plus utilisé
+
+role custom plus de maintenance on peut facilement se perdre dans du custom
+```
+
+## Exercice 5  Gérer les comptes de service et les droits applicatifs
+
+☀️ 1. Attribuer le rôle approprié
+
+permission :
+Lister les objets	storage.objects.list
+Lire le contenu d’un objet	storage.objects.get
+
+roles :
+storage.objectViewer
+
 ```cmd
-
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud storage buckets add-iam-policy-binding gs://tp3-bucket-p1   --member="serviceAccount:app-backend@tp3-infracloud-m1.iam.gservic
+eaccount.com"   --role="roles/storage.objectViewer"
+bindings:
+- members:
+  - projectEditor:tp3-infracloud-m1
+  - projectOwner:tp3-infracloud-m1
+  role: roles/storage.legacyBucketOwner
+- members:
+  - projectViewer:tp3-infracloud-m1
+  role: roles/storage.legacyBucketReader
+- members:
+  - projectEditor:tp3-infracloud-m1
+  - projectOwner:tp3-infracloud-m1
+  role: roles/storage.legacyObjectOwner
+- members:
+  - projectViewer:tp3-infracloud-m1
+  role: roles/storage.legacyObjectReader
+- members:
+  - serviceAccount:app-backend@tp3-infracloud-m1.iam.gserviceaccount.com
+  role: roles/storage.objectViewer
+etag: CAQ=
+kind: storage#policy
+resourceId: projects/_/buckets/tp3-bucket-p1
+version: 1
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ 
 ```
-☀️
+il faut donne le droit que sur le bucket sinon il pourra faire les action du rôle sur tous les bucket
+
+☀️ 2. Préparer lʼapplication à déployer
 ```cmd
 
 ```
