@@ -60,8 +60,8 @@ jobs:
             --image=europe-west9-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/flask-api-repo/flask-api:latest \
             --region=europe-west9 \
             --platform=managed \
-            --allow-unauthenticated
-            --service-account=app-backend@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com
+            --allow-unauthenticated \
+            --service-account=app-backend@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com \
             --set-env-vars BUCKET_NAME=tp3-bucket-p1
 
 #  deploy-web:

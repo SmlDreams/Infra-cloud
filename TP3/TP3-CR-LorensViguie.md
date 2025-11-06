@@ -598,6 +598,22 @@ pour communiquer avec gcloud -> pip install google-cloud-storage
 la var d'ENV -> BUCKET_NAME=tp3-bucket-p1
 l'auth ce fait vai les Application Default Credentials
 [le code](./API/app.py)
+
+
+☀️
+```cmd
+
+```
+☀️
+```cmd
+
+```
+
+
+
+
+
+
 ```cmd
 gcloud iam service-accounts create github-deployer \
   --display-name="GitHub CI/CD Service Account"
@@ -637,14 +653,7 @@ etag: BwZC7GOf5nM=
 version: 1
 
 ```
-☀️
-```cmd
 
-```
-☀️
-```cmd
-
-```
 ☀️
 ```cmd
 
