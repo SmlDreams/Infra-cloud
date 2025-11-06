@@ -407,8 +407,8 @@ Quelle notification pouvez-vous configurer ?
 | Webhook      | Appel HTTP vers ton système externe de monitoring ou ticketing      |
 | Slack / Chat | Intégration à un canal Slack ou Google Chat                         |
 
-### ☀️ 6. 
-Nettoyer et consigner vos observations
+### ☀️ 6. Nettoyer et consigner vos observations
+
 ```bash
 gcloud logging metrics delete SET_IAM_POLICY_METRIC_NAME
 ```
