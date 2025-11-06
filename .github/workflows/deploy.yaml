@@ -29,6 +29,16 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           version: "latest"
+          
+      # 3️⃣ Créer le repository Artifact Registry si nécessaire
+      - name: Create Artifact Registry repository
+        run: |
+          gcloud artifacts repositories describe flask-api-repo \
+            --location=europe-west9 || \
+          gcloud artifacts repositories create flask-api-repo \
+            --repository-format=docker \
+            --location=europe-west9 \
+            --description="Repository for Flask API Docker images"
 
       # 3️⃣ Configure Docker pour Artifact Registry
       - name: Configure Docker authentication
