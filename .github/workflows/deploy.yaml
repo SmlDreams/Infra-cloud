@@ -2,7 +2,7 @@ name: Deploy Flask API & Static Web to GCP
 
 on:
   push:
-    branches: [ tp3 ]
+    branches: [ api-flask ]
   workflow_dispatch:
 
 jobs:
@@ -30,6 +30,16 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           version: "latest"
 
+      # 3️⃣ Créer le repository Artifact Registry si nécessaire
+      - name: Create Artifact Registry repository
+        run: |
+          gcloud artifacts repositories describe flask-api-repo \
+            --location=europe-west9 || \
+          gcloud artifacts repositories create flask-api-repo \
+            --repository-format=docker \
+            --location=europe-west9 \
+            --description="Repository for Flask API Docker images"
+
       # 3️⃣ Configure Docker pour Artifact Registry
       - name: Configure Docker authentication
         run: |
@@ -50,7 +60,9 @@ jobs:
             --image=europe-west9-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/flask-api-repo/flask-api:latest \
             --region=europe-west9 \
             --platform=managed \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --service-account=app-backend@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com \
+            --set-env-vars BUCKET_NAME=tp3-bucket-p1
 
 #  deploy-web:
 #    name: Upload static website to GCS

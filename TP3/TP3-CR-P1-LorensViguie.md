@@ -1,18 +1,18 @@
-# Compte rendu du TP3
+# Compte rendu du TP3 P1
 
 ## Exercice 1 . Créer les identités de base
 
-☀️ 1. Création du projet
+### ☀️ 1. Création du projet
 on a crée un project avec son id et en rajoutant un arguments --name
-```cmd
+```bash
 lorensviguie@cloudshell:~$ gcloud projects create tp3-infracloud-m1 --name="TP3 InfraCloud M1"
 [...]
 Operation "operations/acat.p2-221439700799-73d2cad9-8c2a-4af7-8879-94206b22b353" finished successfully.
 ```
-☀️ 2. Utilisateurs IAM
+### ☀️ 2. Utilisateurs IAM
 on ajoute au projet 2 nouveau membre qui sont des comptes google
 avec 2 role differnet read only pour lorensviguie06 et un role d'editeur pour lorensvpro
-```cmd
+```bash
 lorensviguie@cloudshell:~$ gcloud projects add-iam-policy-binding tp3-infracloud-m1 \
   --member="user:lorensviguie06@gmail.com" \
   --role="roles/viewer"
@@ -43,18 +43,18 @@ bindings:
 etag: BwZC6R2zkhs=
 version: 1
 ```
-☀️ 3. Compte de service
+### ☀️ 3. Compte de service
 on se place dans le projet du tp et on crée un utilisateurs de service pour le moment sans permissions
-```cmd
+```bash
 lorensviguie@cloudshell:~$ gcloud config set project  
-circular-truth-477213-d2   tp3-infracloud-m1          
+tp3-infracloud-m1)   tp3-infracloud-m1          
 lorensviguie@cloudshell:~$ gcloud config set project tp3-infracloud-m1 
 Updated property [core/project].
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam service-accounts create app-backend   --display-name="Application Backend"
 Created service account [app-backend].                     
 ```
-☀️ 4. Vérification
-```cmd
+### ☀️ 4. Vérification
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam service-accounts list
 DISPLAY NAME: Application Backend
 EMAIL: app-backend@tp3-infracloud-m1.iam.gserviceaccount.com
@@ -63,10 +63,10 @@ DISABLED: False
 
 ## Exercice 2 . Explorer IAM et les rôles
 
-☀️ 1. Lister les membres IAM
+### ☀️ 1. Lister les membres IAM
 on rajoute une permission au compte service juste pour avoir plus de data dans le listing
 puis on peut voire les 3 user policy et la policy pour le compte de service 
-```cmd
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding tp3-infracloud-m1 \
   --member="serviceAccount:app-backend@tp3-infracloud-m1.iam.gserviceaccount.com" \
   --role="roles/artifactregistry.admin"
@@ -107,8 +107,8 @@ version: 1
 
 ## Exercice 3 . Portée des rôles et permissions atomiques
 
-☀️ 1. Comprendre les permissions dʼun rôle
-```cmd
+### ☀️ 1. Comprendre les permissions dʼun rôle
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam roles describe roles/storage.objectViewer
 description: Grants access to view objects and their metadata, excluding ACLs. Can
   also list the objects in a bucket.
@@ -135,10 +135,10 @@ storage.folders.list Permet de lister les dossiers présents à la racine ou dan
 storage.managedFolders.get Permet de consulter les informations détaillées d’un dossier géré (Managed Folder).  
 storage.managedFolders.list	Permet de lister les Managed Folders enfants d’un bucket ou d’un autre dossier géré.  
 
-☀️ 2. Créer une ressource pour vos tests
+### ☀️ 2. Créer une ressource pour vos tests
 
 je dois liée un billing account pour crée mon bucket
-```cmd
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud beta billing projects link tp3-infracloud-m1 \
   --billing-account=XXXXXXXXXXXXX
 billingAccountName: billingAccounts/XXXXXXXXXXXXX
@@ -168,8 +168,8 @@ uniform_bucket_level_access: true
 update_time: 2025-11-06T09:22:20+0000
 ```
 
-☀️ 3. Lister les permissions disponibles sur une ressource
-```cmd
+### ☀️ 3. Lister les permissions disponibles sur une ressource
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam list-testable-permissions //storage.googleapis.com/projects/_/buckets/tp3-bucket-p1
 ---
 name: resourcemanager.hierarchyNodes.createTagBinding
@@ -192,8 +192,8 @@ storage.objects.get	Lire les données et métadonnées d’un objet GCS.
 storage.objects.getIamPolicy	Lire la politique IAM appliquée à l’objet.  
 storage.objects.list	Lister les objets présents dans le bucket.  
 
-☀️ 4. Accorder un rôle sur une ressource spécifique
-```cmd
+### ☀️ 4. Accorder un rôle sur une ressource spécifique
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud storage buckets add-iam-policy-binding gs://tp3-bucket-p1 \
   --member="user:lorensviguie06@gmail.com" \
   --role="roles/storage.objectViewer"
@@ -225,8 +225,8 @@ lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud storage buckets get-iam-po
 ROLE: ['roles/storage.legacyBucketOwner', 'roles/storage.legacyBucketReader', 'roles/storage.legacyObjectOwner', 'roles/storage.legacyObjectReader', 'roles/storage.objectViewer']
 MEMBERS: [['projectEditor:tp3-infracloud-m1', 'projectOwner:tp3-infracloud-m1'], ['projectViewer:tp3-infracloud-m1'], ['projectEditor:tp3-infracloud-m1', 'projectOwner:tp3-infracloud-m1'], ['projectViewer:tp3-infracloud-m1'], ['user:Lorensviguie06@gmail.com']]
 ```
-☀️ 5. Tester lʼaccès restreint
-```cmd
+### ☀️ 5. Tester lʼaccès restreint
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud auth login lorensviguie06@gmail.com
 
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud storage buckets list
@@ -250,10 +250,10 @@ update_time: 2025-11-06T09:45:57+0000
 # mais via la WebUi je ne peux pas push des fichier sur le bukcet mais je le vois bien
 # lecture et download marche mais pas push
 ```
-☀️ 6. Étendre le rôle au niveau projet
+### ☀️ 6. Étendre le rôle au niveau projet
 
 un peu bête car deja le role view au niveau du projet mais ca marche et permet de donné a un user le droit de vu sur tous les storage bucket du projet
-```cmd
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding tp3-infracloud-m1 \
   --member="user:lorensviguie06@gmail.com" \
   --role="roles/storage.objectViewer"
@@ -279,7 +279,7 @@ version: 1
 ```
 tjrs que un bucket mais mtn le user si il n'a pas la permission global il pourrai mtn voir tous les bucket du projet et download les bucket et pas faire de modification 
 
-☀️ 7. Comparer les deux portées
+### ☀️ 7. Comparer les deux portées
 Quelles différences observez-vous entre :
     un rôle appliqué sur une ressource spécifique ?
     un rôle appliqué sur un projet entier ?
@@ -298,8 +298,8 @@ un utilisateur ne dispose des acces en lecture ou ecriture seulement sur les res
 ```
 
 
-☀️ 8. Nettoyer la configuration
-```cmd
+### ☀️ 8. Nettoyer la configuration
+```bash
 # on retire la permission au niveau du projet
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects remove-iam-policy-binding tp3-infracloud-m1 \
   --member="user:Lorensviguie06@gmail.com" \
@@ -345,10 +345,10 @@ version: 1
 ```
 bon la il a encore acces car permission au niveau du projet
 
-## Exercice 4  Créer un rôle personnalisé pour Cloud Run
+## Exercice 4 . Créer un rôle personnalisé pour Cloud Run
 
 
-☀️ 1. Identifier les permissions nécessaires
+### ☀️ 1. Identifier les permissions nécessaires
 déployer un service Cloud Run ?
 ```txt
 run.services.create et run.services.update
@@ -374,9 +374,9 @@ roles/run.developer	create, update, get, list (pas delete)
 roles/run.viewer get, list seulement (lecture seule)
 ```
 
-☀️ 2. Créer le fichier de définition
+### ☀️ 2. Créer le fichier de définition
 
-```cmd
+```bash
 # normalement il y a tous les champs obligatoires la
 title: "Cloud Run Service Manager"
 description: "Rôle personnalisé permettant de créer, lire et supprimer des services Cloud Run"
@@ -388,8 +388,8 @@ includedPermissions:
   - run.services.delete
 ```
 
-☀️ 3. Créer le rôle dans votre projet
-```cmd
+### ☀️ 3. Créer le rôle dans votre projet
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam roles create cloudRunServiceManager \
   --project=tp3-infracloud-m1 \
   --file=test.yaml
@@ -426,8 +426,8 @@ name: projects/tp3-infracloud-m1/roles/cloudRunServiceManager
 stage: GA
 title: Cloud Run Service Manager
 ```
-☀️ 4. Attribuer le rôle à un utilisateur
-```cmd
+### ☀️ 4. Attribuer le rôle à un utilisateur
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding tp3-infracloud-m1 \
   --member="user:lorensviguie06@gmail.com" \
   --role="projects/tp3-infracloud-m1/roles/cloudRunServiceManager"
@@ -463,8 +463,8 @@ version: 1
 ```
 je suis le compte owner donc j'ai tous les droit sur le projet
 
-☀️ 5. Tester le rôle
-```cmd
+### ☀️ 5. Tester le rôle
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud config set run/region europe-west9
 Updated property [run/region].
 
@@ -508,8 +508,8 @@ Deleted service [nginx-test].
 ```
 tous est passé donc j'ai bien les permission necesaire pour lister crée et delete un container sur cloud run 
 
-☀️ 6. Analyser et corriger
-```cmd
+### ☀️ 6. Analyser et corriger
+```bash
 #il manque des perm AAAAAAAAAAAAAA
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud auth login lorensviguie@gmail.com
 [...]
@@ -526,8 +526,8 @@ includedPermissions:
 - run.services.list
 ```
 
-☀️ 7. Nettoyer la configuration
-```cmd
+### ☀️ 7. Nettoyer la configuration
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam roles delete cloudRunServiceManager --project=tp3-infracloud-m1
 deleted: true
 description: Rôle personnalisé permettant de créer, lire et supprimer des services
@@ -552,9 +552,9 @@ si il n'est plus utilisé
 role custom plus de maintenance on peut facilement se perdre dans du custom
 ```
 
-## Exercice 5  Gérer les comptes de service et les droits applicatifs
+## Exercice 5 . Gérer les comptes de service et les droits applicatifs
 
-☀️ 1. Attribuer le rôle approprié
+### ☀️ 1. Attribuer le rôle approprié
 
 permission :
 Lister les objets	storage.objects.list
@@ -563,7 +563,7 @@ Lire le contenu d’un objet	storage.objects.get
 roles :
 storage.objectViewer
 
-```cmd
+```bash
 lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud storage buckets add-iam-policy-binding gs://tp3-bucket-p1   --member="serviceAccount:app-backend@tp3-infracloud-m1.iam.gservic
 eaccount.com"   --role="roles/storage.objectViewer"
 bindings:
@@ -592,61 +592,149 @@ lorensviguie@cloudshell:~ (tp3-infracloud-m1)$
 ```
 il faut donne le droit que sur le bucket sinon il pourra faire les action du rôle sur tous les bucket
 
-☀️ 2. Préparer lʼapplication à déployer
+### ☀️ 2. Préparer lʼapplication à déployer
 
 pour communiquer avec gcloud -> pip install google-cloud-storage
 la var d'ENV -> BUCKET_NAME=tp3-bucket-p1
 l'auth ce fait vai les Application Default Credentials
 [le code](./API/app.py)
-```cmd
+
+
+### ☀️ 3. Conteneuriser lʼapplication
+
+Rédigez un Dockerfile minimal pour exécuter votre application.  
+[le Dockerfile](./API/Dockerfile).  
+
+Quelle instruction détermine le port utilisé par Cloud Run ?  
+variable environnement -> PORT.  
+
+Comment pouvez-vous tester localement votre conteneur avant déploiement ?  
+```bash
+docker build -t flask-api:local .
+docker run -p 8080:8080 -e BUCKET_NAME=tp3-bucket-p1 flask-api:local
+```
+
+Quelle commande permet de construire lʼimage et de la publier dans
+le registre de conteneurs de votre projet ?
+```txt
+YOLO on fait la CI nous
+```
+[la CI en question](/.github/workflows/deploy.yaml)
+
+
+### ☀️ 4. Déployer sur Cloud Run
+
+Quelle option CLI permet de spécifier le compte de service associé au déploiement ?
+--service-account=<SERVICE_ACCOUNT_EMAIL>.  
+
+Où pouvez-vous vérifier dans la console que Cloud Run utilise bien ce compte de service ?
+```bash
+gcloud run services describe flask-api \
+  --region=europe-west9 \
+  --platform=managed \
+  --format="value(spec.template.spec.serviceAccountName)"
+```
+
+```bash
 gcloud iam service-accounts create github-deployer \
   --display-name="GitHub CI/CD Service Account"
-orensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding circular-truth-477213-d2 \
-  --member="serviceAccount:github-deployer@circular-truth-477213-d2.iam.gserviceaccount.com" \
+
+gcloud iam service-accounts keys create github-sa-key.json \
+  --iam-account=github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com
+
+
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding tp3-infracloud-m1 \
+  --member="serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com" \
   --role="roles/artifactregistry.admin"
-Updated IAM policy for project [circular-truth-477213-d2].
+Updated IAM policy for project [tp3-infracloud-m1].
 bindings:
 - members:
-  - serviceAccount:github-deployer@circular-truth-477213-d2.iam.gserviceaccount.com
+  - serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com
   role: roles/storage.admin
 etag: BwZC7BM1QBE=
 version: 1
-lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding circular-truth-477213-d2 \
-  --member="serviceAccount:github-deployer@circular-truth-477213-d2.iam.gserviceaccount.com" \
+
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud projects add-iam-policy-binding tp3-infracloud-m1 \
+  --member="serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com" \
   --role="roles/run.admin"
-Updated IAM policy for project [circular-truth-477213-d2].
+Updated IAM policy for project [tp3-infracloud-m1)].
 bindings:
 - members:
   - serviceAccount:976861044501-compute@developer.gserviceaccount.com
   - serviceAccount:976861044501@cloudservices.gserviceaccount.com
   role: roles/editor
 
-```
-☀️
-```cmd
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud iam service-accounts add-iam-policy-binding 221439700799-compute@developer.gserviceaccount.com   --member="serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com"   --role="roles/iam.serviceAccountUser"
+Updated IAM policy for serviceAccount [221439700799-compute@developer.gserviceaccount.com].
+bindings:
+- members:
+  - serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountUser
+etag: BwZC7GOf5nM=
+version: 1
 
+gcloud iam service-accounts add-iam-policy-binding \
+  app-backend@tp3-infracloud-m1.iam.gserviceaccount.com \
+  --member="serviceAccount:github-deployer@tp3-infracloud-m1.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
 ```
-☀️
-```cmd
 
-```
-☀️
-```cmd
+### ☀️ 5. Tester le service
 
+Accédez à lʼURL du service Cloud Run.  
+```bash
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ curl https://flask-api-221439700799.europe-west9.run.app/list
+["index.html"]
 ```
-☀️
-```cmd
+ 
+Le contenu du bucket sʼaffiche-t-il ?   
+oui ^^
 
-```
-☀️
-```cmd
+Que se passe-t-il si le service tente dʼaccéder à un autre bucket. pour lequel il nʼa pas de rôle IAM ?    
+(deja faut modifier la variable d'env chiant) et ca marche pas car le user app-backend a pas les droits sur les autres bukcet
 
-```
-☀️
-```cmd
+Comment ce comportement illustre-t-il le principe du moindre privilège ?  
+l'api n'a acces que a un bucket donc meme si l'api est corompu et que l'on change la var d'env aucun fuite n'est possible 
 
-```
-☀️
-```cmd
 
+### ☀️ 6. Observer les logs
+
+Recherchez les entrées correspondant à votre service Cloud Run et aux requêtes Cloud Storage.
+Quelle identité (principalEmail) apparaît dans les logs ?
+voir en dessous
+
+
+Comment pouvez-vous confirmer que cʼest bien le compte de service run-backend qui a effectué la lecture du bucket ?
+```bash
+"authenticationInfo": {
+  "principalEmail": "app-backend@tp3-infracloud-m1.iam.gserviceaccount.com"
+}
 ```
+### ☀️ 7. Nettoyer la configuration
+
+Supprimez le service Cloud Run si vous nʼen avez plus besoin.
+```bash
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud run services delete flask-api \
+  --region=europe-west9 \
+  --platform=managed \
+  --quiet
+Deleting [flask-api]...done.                                                                                                                                                       
+Deleted service [flask-api].
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud artifacts repositories delete flask-api-repo \
+  --location=europe-west9 \
+  --quiet
+Delete request issued for: [flask-api-repo]
+Waiting for operation [projects/tp3-infracloud-m1/locations/europe-west9/operations/a300f4ac-8daa-41be-b6cc-5187fa43af87] to complete...done.                                      
+Deleted repository [flask-api-repo].
+lorensviguie@cloudshell:~ (tp3-infracloud-m1)$ gcloud storage rm --recursive gs://tp3-bucket-p1
+Removing objects:
+Removing gs://tp3-bucket-p1/index.html#1762427571378581...                                                                                                                         
+  Completed 1/1                                                                                                                                                                    
+Removing buckets:
+Removing gs://tp3-bucket-p1/...                                                                                                                                                    
+  Completed 1/1
+```
+
+Pourquoi est-il risqué de laisser un compte de service inactif ou surdimensionné en permissions dans un projet Cloud ?
+dans un premier pour un question d'argent et aussi une question de sécu laissé un service non utilisé actif peut etre un moyen d'acces a nos autres services ou juste il peut y avoir des residu compromettant sur le servcie oublié
+

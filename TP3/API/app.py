@@ -14,9 +14,12 @@ bucket = client.bucket(BUCKET_NAME)
 @app.route("/list")
 def list_objects():
     """Liste les objets du bucket et retourne un JSON."""
-    blobs = bucket.list_blobs()
-    files = [blob.name for blob in blobs]
-    return jsonify(files)
+    try:
+        blobs = bucket.list_blobs()
+        files = [blob.name for blob in blobs]
+        return jsonify(files)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     # Expose l'application sur le port défini par Cloud Run
