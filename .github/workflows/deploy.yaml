@@ -2,7 +2,7 @@ name: Deploy Flask API & Static Web to GCP
 
 on:
   push:
-    branches: [ main ]
+    branches: [ api-flask ]
   workflow_dispatch:
 
 jobs:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: TP1/API
+        working-directory: TP3/API
 
     steps:
       - name: Checkout repository
@@ -29,6 +29,16 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           version: "latest"
+
+      # 3️⃣ Créer le repository Artifact Registry si nécessaire
+      - name: Create Artifact Registry repository
+        run: |
+          gcloud artifacts repositories describe flask-api-repo \
+            --location=europe-west9 || \
+          gcloud artifacts repositories create flask-api-repo \
+            --repository-format=docker \
+            --location=europe-west9 \
+            --description="Repository for Flask API Docker images"
 
       # 3️⃣ Configure Docker pour Artifact Registry
       - name: Configure Docker authentication
@@ -50,30 +60,32 @@ jobs:
             --image=europe-west9-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/flask-api-repo/flask-api:latest \
             --region=europe-west9 \
             --platform=managed \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --service-account=app-backend@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com \
+            --set-env-vars BUCKET_NAME=tp3-bucket-p1
 
-  deploy-web:
-    name: Upload static website to GCS
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: TP1/WEB
-    needs: deploy-api
+#  deploy-web:
+#    name: Upload static website to GCS
+#    runs-on: ubuntu-latest
+#    defaults:
+#      run:
+#        working-directory: TP1/WEB
+#    needs: deploy-api
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
 
-      - name: Authenticate to GCP
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+#      - name: Authenticate to GCP
+#        uses: google-github-actions/auth@v1
+#        with:
+#          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Upload static site to GCS
-        run: |
-          echo "Syncing website to bucket..."
-          # Utilise gcloud storage rsync à la place de gsutil
-          gcloud storage cp ./ gs://mon-site-web-bucket/ --recursive
+#      - name: Upload static site to GCS
+#        run: |
+#          echo "Syncing website to bucket..."
+#          # Utilise gcloud storage rsync à la place de gsutil
+#          gcloud storage cp ./ gs://mon-site-web-bucket/ --recursive
 
 
 
