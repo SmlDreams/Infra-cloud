@@ -6,7 +6,7 @@
 
 ## TP2
 
-[le TP2 du groupes](./TP2/TP2-CR-GLOBAL.md)
+[le TP2 du groupe](./TP2/TP2-CR-GLOBAL.md)
 
 ## TP3
 
