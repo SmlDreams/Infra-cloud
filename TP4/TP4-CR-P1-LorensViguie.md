@@ -163,5 +163,6 @@ kubectl delete namespace tp-app
 
 gcloud container clusters delete tp4-kubcluster --zone=europe-west1-b --project=lorens060104
 gcloud artifacts repositories delete tp-app-repo --location=europe-west1 --project=lorens060104
+gcloud projects delete lorens060104
 
 ```
