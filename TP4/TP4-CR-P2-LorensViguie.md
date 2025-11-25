@@ -127,5 +127,16 @@ MacBook-Air-de-Remult:Infra-cloud remult$ kubectl get service
 NAME        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
 guestbook   ClusterIP   10.110.204.217   <none>        800/TCP   3m18s
 
+
+## les divergences
+
+MacBook-Air-de-Remult:Infra-cloud remult$ kubectl scale deployment guestbook --replicas=5 -n guestbook
+deployment.apps/guestbook scaled
+MacBook-Air-de-Remult:Infra-cloud remult$ kubectl get deployment -n guestbook
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+guestbook   1/1     5            1           5m23s
+MacBook-Air-de-Remult:Infra-cloud remult$ kubectl get deployment -n guestbook
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+guestbook   1/1     1            1           6m33s
 ```
 
