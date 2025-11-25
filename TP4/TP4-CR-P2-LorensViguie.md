@@ -120,5 +120,9 @@ release "guestbook" uninstalled
 
 ## Définir l’ Application Argo CD
 bon je vais pas mettre des screen mais ca marche
+MacBook-Air-de-Remult:Infra-cloud remult$ kubectl get service
+NAME        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+guestbook   ClusterIP   10.110.204.217   <none>        80/TCP    119s
+
 ```
 
