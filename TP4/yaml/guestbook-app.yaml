@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook
+  namespace: argocd
+spec:
+  project: default
+
+  # Source du chart Helm ou Git
+  source:
+    repoURL: 'https://github.com/SmlDreams/Infra-cloud.git'
+    targetRevision: main
+    path: TP4/helm-work/guestbook
+    helm:
+      valueFiles: 
+        - values.yaml
+
+  # Destination dans le cluster
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: guestbook
+
+  # Synchronisation automatique
+  syncPolicy:
+    automated:
+      prune: true       # supprime les ressources qui ne sont plus dans Git
+      selfHeal: true    # corrige les dérives par rapport à Git
+    syncOptions:
+      - CreateNamespace=true  # crée le namespace si nécessaire

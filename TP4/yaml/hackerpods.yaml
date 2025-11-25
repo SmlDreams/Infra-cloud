@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hacker-pod
+  namespace: dev
+spec:
+  serviceAccountName: sa-risky
+  containers:
+    - name: hacker
+      image: bitnami/kubectl
+      command: ["sleep", "3600"]
