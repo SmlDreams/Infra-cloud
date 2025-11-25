@@ -38,12 +38,6 @@ gke-tp4-kubcluster-default-pool-bd6b36df-tvh1   Ready    <none>   106s   v1.33.5
 ```
 
 ## 3. Namespace et objets de configuration
-Créer un namespace tp-app .
-Créer un ConfigMap dans tp-app avec au minimum :
-APP_MESSAGE (string libre).
-UPLOAD_ALLOWED_EXT (ex : .txt ).
-Créer un Secret dans tp-app avec :
-UPLOAD_PASSWORD (mot de passe attendu pour lʼupload).
 
 j'ai tous fait via des commandes et pas des fichier yaml car plus simple pour le rendu
 
@@ -65,90 +59,109 @@ kubectl create secret generic app-secret \
 
 
 ## 5. Conteneurisation et registry
-Créer un Dockerfile :
-image de base Python officielle,
-copie de requirements.txt ,
-installation des dépendances,
-copie de main.py ,
-exposition du port de lʼapp (ex  8000,
-commande de démarrage de lʼapp.
-Builder lʼimage Docker en local.
-Tagger lʼimage pour le registry du cloud :
-GCP  Artifact Registry,
-Pousser lʼimage dans le registry choisi.
 
-``cmd
-# Crée un dépôt docker dans Artifact Registry
+```cmd
+docker tag tp-app:latest europe-west1-docker.pkg.dev/lorens060104/tp-app-repo/tp-app:latest
+docker push europe-west1-docker.pkg.dev/lorens060104/tp-app-repo/tp-app:latest
+
+```
+
+```cmd
 gcloud artifacts repositories create tp-app-repo \
   --repository-format=docker \
   --location=europe-west1
+gcloud auth configure-docker europe-west1-docker.pkg.dev
+gcloud artifacts docker images list europe-west1-docker.pkg.dev/lorens060104/tp-app-repo
 ```
 
 ## 6. Stockage – PVC RWX
- Créer dans le namespace tp-app un PVC nommé shared-pvc avec :
-mode dʼaccès : ReadWriteMany ,
-taille  1Gi,
- Vérifier que le PVC passe en état Bound
 
+[pvc-yml](./yaml/shared-pvc.yaml)
+
+```cmd
+gcloud services enable file.googleapis.com --project=lorens060104
+gcloud filestore instances create tp-filestore \
+  --tier=STANDARD \
+  --file-share=name="tp_share",capacity=1024GiB \
+  --network=name="default" \
+  --zone=europe-west1-b
+kubectl apply -f shared-pvc.yaml
+kubectl get pvc -n tp-app
+NAME         STATUS   VOLUME      CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+shared-pvc   Bound    shared-pv   1Gi        RWX            nfs-rwx        <unset>                 4s
+```
 
 ## 7. Déploiement de lʼapplication
- Créer un Deployment dans le namespace tp-app avec :Module 10  Kubernetes managé  AKS / EKS / GKE9
-2 replicas,
-container utilisant lʼimage poussée au registry,
-envFrom ou env pour :
-injecter le ConfigMap APP_MESSAGE, UPLOAD_ALLOWED_EXT,
-injecter le Secret UPLOAD_PASSWORD,
-volume :
-type : persistentVolumeClaim ,
-claimName: shared-pvc ,
-volumeMounts :
-monter le volume sur /data .
- Appliquer le manifeste du Deployment.
- Vérifier que les Pods passent en Running .
 
+```cmd
+kubectl get pods -n tp-app
+NAME                                 READY   STATUS    RESTARTS   AGE
+tp-app-deployment-7994dd448f-n2crq   1/1     Running   0          2m55s
+tp-app-deployment-7994dd448f-zcqtf   1/1     Running   0          2m55s
+```
 
 ## 8. Exposition de lʼapplication
- Créer un Service de type LoadBalancer dans tp-app :
-cible : les Pods du Deployment,
-port externe  80,
-port cible : port de lʼapp dans le container (ex  8000.
- Appliquer le Service.
- Récupérer lʼIP publique du Service.
+
+```cmd
+kubectl get service -n tp-app
+NAME             TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)        AGE
+tp-app-service   LoadBalancer   34.118.231.30   34.38.203.167   80:31414/TCP   3m51s
+```
 
 ## 9. Tests fonctionnels
- Appeler GET / sur lʼIP publique :
-vérifier que la liste des fichiers est vide au départ.
- Tester POST /upload :
-avec un mauvais password → upload refusé,
-avec le bon password (valeur du Secret) et une extension autorisée →
-upload accepté.Module 10  Kubernetes managé  AKS / EKS / GKE10
- Refaire GET / :
-vérifier que le fichier apparaît dans la liste
+
+```cmd
+curl http://34.38.203.167/
+{"app_message":"Hello from Kubernetes!","files":["lost+found"]}
+curl -F "password=MonSuperMotDePasse123" -F "file=@test.txt" http://34.38.203.167/upload
+{"message":"File test.txt uploaded successfully"}
+curl -F "password=SuperMotDePasse123" -F "file=@test.txt" http://34.38.203.167/upload
+{"error":"Invalid password"}
+curl http://34.38.203.167/
+{"app_message":"Hello from Kubernetes!","files":["lost+found","test.txt"]}
+```
 
 ## 10. Tests RWX et stateless
- Vérifier que les 2 Pods du Deployment sont en Running .
- Se connecter en shell sur le premier Pod :
-lister les fichiers dans /data .
- Se connecter sur le deuxième Pod :
-vérifier que les mêmes fichiers sont visibles dans /data .
- Supprimer un des Pods du Deployment.
- Vérifier :
-le Service continue de répondre via lʼautre Pod,
-le Pod recréé par le Deployment voit immédiatement les fichiers dans
-/data 
+
+```cmd
+kubectl exec -it tp-app-deployment-7994dd448f-n2crq -n tp-app -- /bin/sh
+# ls -l /data
+total 20
+drwx------ 2 root root 16384 Nov 25 10:08 lost+found
+-rw-r--r-- 1 root root     4 Nov 25 10:23 test.txt
+kubectl exec -it tp-app-deployment-7994dd448f-zcqtf -n tp-app -- /bin/sh
+# ls -l /data
+total 20
+drwx------ 2 root root 16384 Nov 25 10:08 lost+found
+-rw-r--r-- 1 root root     4 Nov 25 10:23 test.txt
+
+kubectl delete pod tp-app-deployment-7994dd448f-zcqtf -n tp-app
+pod "tp-app-deployment-7994dd448f-zcqtf" deleted from tp-app namespace
+kubectl get pods -n tp-app
+NAME                                 READY   STATUS        RESTARTS   AGE
+tp-app-deployment-7994dd448f-2j8d9   1/1     Running       0          15s
+tp-app-deployment-7994dd448f-n2crq   1/1     Running       0          16m
+tp-app-deployment-7994dd448f-zcqtf   1/1     Terminating   0          16m
+
+kubectl exec -it tp-app-deployment-7994dd448f-2j8d9 -n tp-app -- ls -al /data
+total 28
+drwxr-xr-x 3 root root  4096 Nov 25 10:23 .
+drwxr-xr-x 1 root root  4096 Nov 25 10:28 ..
+drwx------ 2 root root 16384 Nov 25 10:08 lost+found
+-rw-r--r-- 1 root root     4 Nov 25 10:23 test.txt
+```
 
 ## 11. Nettoyage
-Dans le namespace tp-app , supprimer :
-Deployment,
-Service,
-PVC,
-ConfigMap,
-Secret,
-namespace tp-app .
 
+```cmd
+kubectl delete deployment tp-app-deployment -n tp-app
+kubectl delete service tp-app-service -n tp-app
+kubectl delete pvc shared-pvc -n tp-app
+kubectl delete configmap app-config -n tp-app
+kubectl delete secret app-secret -n tp-app
+kubectl delete namespace tp-app
 
-Dans le cloud, supprimer :
-le cluster Kubernetes managé,
-le registry utilisé,
-les ressources associées créées uniquement pour le TP Resource
-Group, projet, etc.).
+gcloud container clusters delete tp4-kubcluster --zone=europe-west1-b --project=lorens060104
+gcloud artifacts repositories delete tp-app-repo --location=europe-west1 --project=lorens060104
+
+```
