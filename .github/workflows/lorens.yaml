@@ -22,7 +22,7 @@ jobs:
 
       - name: Build & Push Image
         run: |
-          docker build -f deployments/pre-prod/Dockerfile \
+          docker build -f deployments/pre-prod/Dockerfile .
             -t europe-west1-docker.pkg.dev/tpfinal-lorens/vaultaire/vaultaire-core:latest .
           docker push europe-west1-docker.pkg.dev/tpfinal-lorens/vaultaire/vaultaire-core:latest
 
