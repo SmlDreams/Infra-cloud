@@ -18,9 +18,15 @@
 [P1](./TP3/tp3-1-quentin.md)
 [P2](./TP3/tp3-2-quentin.md)
 
+## De Alexy
+[P1](./TP3/TP3-CR-P1AlexyDaubresse.md)
+[P2](./TP3/TP3-CR-P2-AlexyDaubresse.md)
 
 ## TP4 Kubernetes
 
 ### De Lorens
 [P1](./TP4/TP4-CR-P1-LorensViguie.md)
 [P2](./TP4/TP4-CR-P2-LorensViguie.md)
+
+## De Alexy
+[P1](./TP4/TP4-CR-P1-AlexyDaubresse.md)
