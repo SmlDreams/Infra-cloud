@@ -1,0 +1,31 @@
+name: Vaultaire CI/CD
+
+on:
+  push:
+    branches: [ "lorens_TP-FINAL" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auth GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure Docker
+        run: |
+          gcloud auth configure-docker europe-west1-docker.pkg.dev
+
+      - name: Build & Push Image
+        run: |
+          docker build -f deployments/pre-prod/Dockerfile \
+            -t europe-west1-docker.pkg.dev/tpfinal-lorens/vaultaire/vaultaire-core:latest .
+          docker push europe-west1-docker.pkg.dev/tpfinal-lorens/vaultaire/vaultaire-core:latest
+
+      - name: Deploy to GKE
+        run: |
+          kubectl apply -f k8s/

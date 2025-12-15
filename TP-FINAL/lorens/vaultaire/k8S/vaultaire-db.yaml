@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vaultaire-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultaire-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultaire-db
+  template:
+    metadata:
+      labels:
+        app: vaultaire-db
+    spec:
+      containers:
+      - name: vaultaire-db
+        image: mariadb:latest
+        env:
+          - name: MARIADB_ROOT_PASSWORD
+            value: "root"
+          - name: MARIADB_DATABASE
+            value: "vaultaire"
+          - name: TZ
+            value: "Europe/Paris"
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: vaultaire-db-storage
+      volumes:
+        - name: vaultaire-db-storage
+          persistentVolumeClaim:
+            claimName: vaultaire-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultaire-db
+spec:
+  selector:
+    app: vaultaire-db
+  ports:
+    - port: 3306
+      targetPort: 3306
+  type: ClusterIP
