@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultaire-ad
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultaire-ad
+  template:
+    metadata:
+      labels:
+        app: vaultaire-ad
+    spec:
+      containers:
+        - name: vaultaire-ad
+          image: europe-west1-docker.pkg.dev/tpfinal-lorens/vaultaire/vaultaire-core:latest
+          env:
+            - name: TZ
+              value: "Europe/Paris"
+          ports:
+            - containerPort: 666
+            - containerPort: 443
+            - containerPort: 389
+            - containerPort: 636
+            - containerPort: 6643
+          volumeMounts:
+            - name: vaultaire-config-volume
+              mountPath: /app/config/vaultaire.conf
+              subPath: vaultaire.conf
+      volumes:
+        - name: vaultaire-config-volume
+          configMap:
+            name: vaultaire-config
+      imagePullSecrets:
+        - name: vaultaire-registry-secret   # <--- ici
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultaire-ad
+spec:
+  selector:
+    app: vaultaire-ad
+  ports:
+    - name: port-666
+      port: 666
+      targetPort: 666
+    - name: port-443
+      port: 443
+      targetPort: 443
+    - name: port-389
+      port: 389
+      targetPort: 389
+    - name: port-636
+      port: 636
+      targetPort: 636
+    - name: port-6643
+      port: 6643
+      targetPort: 6643
+  type: LoadBalancer
