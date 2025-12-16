@@ -149,7 +149,146 @@ Le workflow [lorens.yaml](/.github/workflows/lorens.yaml) automatise :
 - La construction et le push de l'image Docker
 - Le déploiement sur GKE
 
+Cependant, il nécessite la configuration d'un secret `GCP_SA_KEY` contenant la clé JSON d'un compte de service avec les permissions appropriées (Artifact Registry et GKE).
 
-## Infrastructure as Code avec Terraform
+### Améliorations Requises
+- Créer un compte de service dédié pour CI/CD
+- Générer et stocker la clé dans GitHub Secrets
+- Ajouter des tests automatisés
+- Implémenter des déploiements progressifs (blue-green ou canary)
 
-Les fichiers Terraform (`infra/main.tf`, `provider.tf`, `variables.tf`) permettent de provisionner l'infrastructure de manière déclarative et reproductible, complétant les déploiements manuels.
+## Partie 7 : Déploiement de la Base de Données MariaDB plus propre
+
+### Configuration MariaDB sur Kubernetes
+
+Pour la persistance des données de Vaultaire, nous déployons une instance MariaDB directement sur Kubernetes via des manifests YAML.
+
+```yaml
+# Extrait du fichier vaultaire-db.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vaultaire-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultaire-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultaire-db
+  template:
+    metadata:
+      labels:
+        app: vaultaire-db
+    spec:
+      containers:
+      - name: vaultaire-db
+        image: mariadb:latest
+        env:
+          - name: MARIADB_ROOT_PASSWORD
+            value: "root"
+          - name: MARIADB_DATABASE
+            value: "vaultaire"
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: vaultaire-db-storage
+      volumes:
+        - name: vaultaire-db-storage
+          persistentVolumeClaim:
+            claimName: vaultaire-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultaire-db
+spec:
+  selector:
+    app: vaultaire-db
+  ports:
+    - port: 3306
+      targetPort: 3306
+  type: ClusterIP
+```
+
+### Déploiement
+```sh
+kubectl apply -f ./k8S/vaultaire-db.yaml # toujours l'ancienne version actuellement sur le repo
+```
+
+
+
+## Partie 8 : Gestion des Services Managés et Résilience
+
+
+### Résilience et Chaos Engineering
+
+Exemple avec Chaos Mesh :
+```sh
+# Installation de Chaos Mesh
+helm repo add chaos-mesh https://charts.chaos-mesh.org
+helm search repo chaos-mesh -l
+
+# Création d'une expérience de chaos (arrêt aléatoire de pods)
+kubectl create ns chaos-mesh
+helm install chaos-mesh chaos-mesh/chaos-mesh -n=chaos-mesh --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock --version 2.8.0
+
+kubectl get pods -n chaos-mesh -l app.kubernetes.io/instance=chaos-mesh
+```
+
+
+## Partie 9 : Stack de Monitoring avec Prometheus et Grafana
+
+### Déploiement de la Stack de Monitoring
+Pour l'observabilité, nous déployons une stack légère Prometheus + Grafana sur Kubernetes.
+
+#### Installation via Helm (recommandé)
+```sh
+# Ajout du repo Helm
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+# Installation de kube-prometheus-stack
+helm install monitoring prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  --create-namespace \
+  --set grafana.adminPassword='admin'
+```
+
+#### Accès aux Interfaces
+```sh
+# Port-forwarding pour Grafana
+kubectl port-forward -n monitoring svc/monitoring-grafana 3000:80
+
+# Port-forwarding pour Prometheus
+kubectl port-forward -n monitoring svc/monitoring-prometheus 9090:9090
+```
+
+### Configuration Métriques
+La stack collecte automatiquement les métriques des pods, services et nodes Kubernetes. Nous pouvons ajouter des métriques custom pour Vaultaire en configurant des ServiceMonitors.
+
+```yaml
+# Exemple de ServiceMonitor pour Vaultaire
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: vaultaire-monitor
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: vaultaire-ad
+  endpoints:
+  - port: metrics
+    path: /metrics
+```
